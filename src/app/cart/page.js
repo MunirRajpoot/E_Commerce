@@ -1,9 +1,9 @@
-"use client"
-import { useCart } from "@/context/CartContext"
+"use client";
+import { useCart } from "@/context/CartContext";
 
 export default function CartPage() {
     const { cart, removeFromCart, clearCart } = useCart();
-    const total = cart.reduce((sum, item) => sum + item.price, 0);
+    const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     if (cart.length === 0) {
         return (
@@ -19,6 +19,7 @@ export default function CartPage() {
     return (
         <div className="p-6">
             <h1 className="text-3xl font-bold mb-6">Your Cart</h1>
+
             <div className="space-y-4">
                 {cart.map((item) => (
                     <div
@@ -33,7 +34,9 @@ export default function CartPage() {
                             />
                             <div>
                                 <h2 className="text-lg font-semibold">{item.name}</h2>
-                                <p className="text-gray-600">${item.price}</p>
+                                <p className="text-gray-600">
+                                    ${item.price} × {item.quantity}
+                                </p>
                             </div>
                         </div>
                         <button
@@ -48,10 +51,18 @@ export default function CartPage() {
 
             <div className="mt-6 flex justify-between items-center border-t pt-4">
                 <h2 className="text-xl font-bold">Total: ${total.toFixed(2)}</h2>
-                <button className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                    Checkout
-                </button>
+                <div className="space-x-2">
+                    <button
+                        onClick={clearCart}
+                        className="px-4 py-2 bg-gray-300 rounded hover:bg-gray-400"
+                    >
+                        Clear Cart
+                    </button>
+                    <button className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                        Checkout
+                    </button>
+                </div>
             </div>
         </div>
-    )
+    );
 }

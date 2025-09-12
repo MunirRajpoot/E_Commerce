@@ -10,7 +10,7 @@ export default function ProductDetail() {
     const router = useRouter();
     const { addToCart } = useCart();
     const [product, setProduct] = useState(null);
-
+    
     useEffect(() => {
         if (!id) return;
 
