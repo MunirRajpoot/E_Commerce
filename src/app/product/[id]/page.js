@@ -4,13 +4,14 @@ import { useParams, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useCart } from "@/context/CartContext";
+import toast from "react-hot-toast";
 
 export default function ProductDetail() {
     const { id } = useParams();
     const router = useRouter();
     const { addToCart } = useCart();
     const [product, setProduct] = useState(null);
-    
+
     useEffect(() => {
         if (!id) return;
 
@@ -35,6 +36,11 @@ export default function ProductDetail() {
         return <p className="p-4">Loading...</p>;
     }
 
+    const handleAddToCart = () => {
+        addToCart(product);
+        toast.success(`${product.name} added to cart!`);
+    }
+
     return (
         <div className="p-6">
             <button
@@ -54,7 +60,7 @@ export default function ProductDetail() {
             <p className="text-gray-700 mb-4">{product.description}</p>
 
             <button
-                onClick={() => addToCart(product)}
+                onClick={handleAddToCart}
                 className="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 transition"
             >
                 Add to Cart

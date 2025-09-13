@@ -7,8 +7,10 @@ export const useCart = () => useContext(CartContext);
 
 export function CartProvider({ children }) {
     const [cart, setCart] = useState([]);
+    const [isCheckout, setIsCheckout] = useState(false);
 
     const addToCart = (product) => {
+        if (isCheckout) return; // Prevent adding items during checkout
         setCart((prev) => {
             const existingProduct = prev.find((item) => item.id === product.id);
             if (existingProduct) {
@@ -31,9 +33,13 @@ export function CartProvider({ children }) {
         setCart([]);
     };
 
+
+    const checkout = () => {
+        setIsCheckout(true);
+    }
     return (
         <CartContext.Provider
-            value={{ cart, addToCart, removeFromCart, clearCart }}
+            value={{ cart, addToCart, removeFromCart, clearCart, checkout, isCheckout }}
         >
             {children}
         </CartContext.Provider>

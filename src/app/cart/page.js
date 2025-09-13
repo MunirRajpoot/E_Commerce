@@ -1,9 +1,19 @@
 "use client";
 import { useCart } from "@/context/CartContext";
+import { useState } from "react";
+import toast from "react-hot-toast";
 
 export default function CartPage() {
     const { cart, removeFromCart, clearCart } = useCart();
+    const [isCheckout, setIsCheckout] = useState(false);
     const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+    const handleCheckout = () => {
+        setIsCheckout(true);
+        toast.success("Order Placed Successfully");
+        clearCart();
+
+    }
 
     if (cart.length === 0) {
         return (
@@ -58,7 +68,14 @@ export default function CartPage() {
                     >
                         Clear Cart
                     </button>
-                    <button className="px-6 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                    <button
+                        onClick={handleCheckout}
+                        disabled={isCheckout}
+                        className={`px-6 py-2 rounded text-white ${isCheckout
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-green-600 hover:bg-green-700"
+                            }`}
+                    >
                         Checkout
                     </button>
                 </div>
