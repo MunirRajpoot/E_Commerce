@@ -3,11 +3,13 @@ import Link from "next/link";
 import { supabase } from "@/lib/supabaseClient";
 import { useUser } from "@/context/UserContext";
 import { useState, useEffect } from "react";
-
+import { MdFavoriteBorder } from "react-icons/md";
+import { FaHeart } from "react-icons/fa";
+import { FiShoppingCart } from "react-icons/fi";
 
 export default function ProductCard({ product }) {
     const { user } = useUser();
-    const [loading, setLoading] = useState();
+    const [loading, setLoading] = useState(false);
     const [added, setAdded] = useState(false);
 
     useEffect(() => {
@@ -21,22 +23,19 @@ export default function ProductCard({ product }) {
                 .single();
 
             if (!error && data) {
-                setAdded(true)
+                setAdded(true);
             }
-
         };
         checkFavorite();
+    }, [user, product.id]);
 
-    }, [user, product.id])
-
-    //add to favorite
+    // Add to favorite
     const addToFavorites = async () => {
         if (!user) {
-            alert("Please Login to add Favorite");
-            return
+            alert("Please login to add to favorites");
+            return;
         }
         setLoading(true);
-
 
         const { error } = await supabase
             .from("favorites")
@@ -50,36 +49,61 @@ export default function ProductCard({ product }) {
             setAdded(true);
         }
         setLoading(false);
+    };
 
-    }
+    // Add to Cart (dummy logic for now)
+    const addToCart = () => {
+        alert(`✅ ${product.name} added to cart!`);
+    };
 
     return (
-        <div className="border rounded-lg shadow hover:shadow-lg transition p-4">
-            <img
-                src={product.image_url}
-                alt={product.name}
-                className="w-full h-48 object-cover rounded"
-            />
-            <h2 className="text-lg font-semibold mt-2">{product.name}</h2>
-            <p className="text-gray-600">${product.price}</p>
+        <div className="group relative rounded-2xl shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 bg-white overflow-hidden">
+            {/* Product Image */}
+            <Link href={`/product/${product.id}`}>
+                <div className="relative w-full h-56 overflow-hidden cursor-pointer">
+                    <img
+                        src={product.image_url}
+                        alt={product.name}
+                        className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                </div>
+            </Link>
 
-            <div className="flex gap-2 mt-3">
-                <Link
-                    href={`/product/${product.id}`}
-                    className="flex-1 text-center px-4 py-2 bg-blue-600 text-white rounded"
-                >
-                    View
+            {/* Favorite Button Floating */}
+            <button
+                onClick={addToFavorites}
+                disabled={loading || added}
+                className="absolute top-3 right-3 bg-white/80 hover:bg-white p-2 rounded-full shadow-md transition"
+            >
+                {added ? (
+                    <FaHeart className="text-red-600" size={18} />
+                ) : (
+                    <MdFavoriteBorder className="text-gray-700" size={18} />
+                )}
+            </button>
+
+            {/* Product Info */}
+            <div className="p-4">
+                <Link href={`/product/${product.id}`}>
+                    <h2 className="text-lg font-semibold text-gray-800 truncate hover:underline cursor-pointer">
+                        {product.name}
+                    </h2>
                 </Link>
-                <button
-                    onClick={addToFavorites}
-                    disabled={loading || added}
-                    className={`flex-1 px-4 py-2 rounded text-white ${added
-                            ? "bg-pink-500"
-                            : "bg-pink-600 hover:bg-pink-700"
-                        }`}
-                >
-                    {added ? "Added ❤️" : "Favorite"}
-                </button>
+                <p className="text-blue-600 font-bold text-lg mt-1">
+                    ${product.price}
+                </p>
+
+                {/* Buttons */}
+                <div className="flex gap-2 mt-4">
+                    <button
+                        onClick={addToCart}
+                        className="flex items-center justify-center flex-1 gap-2 px-4 py-2 bg-neutral-700 text-white rounded-lg hover:bg-neutral-800  cursor-pointer"
+                    >
+                        <FiShoppingCart size={18} />
+                        Add to Cart
+                    </button>
+
+                </div>
             </div>
         </div>
     );
