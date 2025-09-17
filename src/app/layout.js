@@ -19,7 +19,7 @@ export default function RootLayout({ children }) {
           <CartProvider>
             <Header/>
             <Navbar />
-            <main className="flex-1 container mx-auto p-4">{children}</main>
+            <main className="flex-1 mx-auto">{children}</main>
             <Footer />
             <Toaster position="top-right" />
           </CartProvider>

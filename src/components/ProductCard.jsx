@@ -6,8 +6,11 @@ import { useState, useEffect } from "react";
 import { MdFavoriteBorder } from "react-icons/md";
 import { FaHeart } from "react-icons/fa";
 import { FiShoppingCart } from "react-icons/fi";
+import { useCart } from "@/context/CartContext";
+import toast from "react-hot-toast";
 
 export default function ProductCard({ product }) {
+    const { addToCart } = useCart();
     const { user } = useUser();
     const [loading, setLoading] = useState(false);
     const [added, setAdded] = useState(false);
@@ -51,11 +54,10 @@ export default function ProductCard({ product }) {
         setLoading(false);
     };
 
-    // Add to Cart (dummy logic for now)
-    const addToCart = () => {
-        alert(`✅ ${product.name} added to cart!`);
-    };
-
+    const handleAddToCart = () => {
+        addToCart(product);
+        toast.success(`${product.name} added to cart!`);
+    }
     return (
         <div className="group relative rounded-2xl shadow-sm hover:shadow-xl transition transform hover:-translate-y-1 bg-white overflow-hidden">
             {/* Product Image */}
@@ -96,7 +98,7 @@ export default function ProductCard({ product }) {
                 {/* Buttons */}
                 <div className="flex gap-2 mt-4">
                     <button
-                        onClick={addToCart}
+                        onClick={handleAddToCart}
                         className="flex items-center justify-center flex-1 gap-2 px-4 py-2 bg-neutral-700 text-white rounded-lg hover:bg-neutral-800  cursor-pointer"
                     >
                         <FiShoppingCart size={18} />

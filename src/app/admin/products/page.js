@@ -4,21 +4,32 @@ import { supabase } from "@/lib/supabaseClient"
 
 export default function AdminProducts() {
     const [products, setProducts] = useState([]);
+    const [categories, setCategories] = useState([]); // ✅ store categories
     const [form, setForm] = useState({
         name: "",
         description: "",
         price: "",
         image_url: "",
+        category_id: "", 
     });
 
     //fetch products from supabase
     const fetchProducts = async () => {
-        const { data } = await supabase.from('products').select('*');
-        setProducts(data);
+        const { data } = await supabase
+            .from('products')
+            .select('*, categories(name)'); // ✅ join to get category name
+        setProducts(data || []);
+    };
+
+    //fetch categories from supabase
+    const fetchCategories = async () => {
+        const { data } = await supabase.from("categories").select("*");
+        setCategories(data || []);
     };
 
     useEffect(() => {
         fetchProducts();
+        fetchCategories();
     }, []);
 
     //add product to supabase
@@ -29,6 +40,7 @@ export default function AdminProducts() {
             description: "",
             price: "",
             image_url: "",
+            category_id: "",
         });
         fetchProducts();
     };
@@ -43,6 +55,7 @@ export default function AdminProducts() {
         <div className="p-6">
             <h1 className="text-2xl font-bold mb-4">Manage Products</h1>
 
+            {/* Product Form */}
             <div className="space-y-2 mb-6">
                 <input
                     type="text"
@@ -52,7 +65,6 @@ export default function AdminProducts() {
                     className="border p-2 rounded w-full"
                 />
 
-                {/* ✅ Description Field Added */}
                 <textarea
                     placeholder="Description"
                     value={form.description}
@@ -68,6 +80,7 @@ export default function AdminProducts() {
                     onChange={(e) => setForm({ ...form, price: e.target.value })}
                     className="border p-2 rounded w-full"
                 />
+
                 <input
                     type="text"
                     placeholder="Image URL"
@@ -75,6 +88,20 @@ export default function AdminProducts() {
                     onChange={(e) => setForm({ ...form, image_url: e.target.value })}
                     className="border p-2 rounded w-full"
                 />
+
+                {/* ✅ Category Dropdown */}
+                <select
+                    value={form.category_id}
+                    onChange={(e) => setForm({ ...form, category_id: e.target.value })}
+                    className="border p-2 rounded w-full"
+                >
+                    <option value="">Select Category</option>
+                    {categories.map((cat) => (
+                        <option key={cat.id} value={cat.id}>
+                            {cat.name}
+                        </option>
+                    ))}
+                </select>
 
                 <button
                     onClick={addProduct}
@@ -84,10 +111,16 @@ export default function AdminProducts() {
                 </button>
             </div>
 
+            {/* Products List */}
             <ul className="space-y-2">
                 {products.map((p) => (
                     <li key={p.id} className="flex justify-between border p-2 rounded">
-                        <span>{p.name}</span>
+                        <span>
+                            {p.name}{" "}
+                            <span className="text-sm text-gray-500">
+                                ({p.categories?.name || "No Category"})
+                            </span>
+                        </span>
                         <button
                             onClick={() => deleteProduct(p.id)}
                             className="text-red-600 hover:underline"

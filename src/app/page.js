@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import ProductList from "@/components/ProductList";
+import Carousel from "@/components/Carousel";
+import Features from "@/components/Features";
 
 export default function HomePage() {
   const [products, seProducts] = useState([]);
@@ -15,10 +17,11 @@ export default function HomePage() {
   }, [])
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">Products</h1>
+    <>
+      <Carousel />
+      <Features/>
       <ProductList products={products} />
 
-    </div>
+    </>
   )
 }
